@@ -2,7 +2,7 @@
 	import { max, rollups, scaleBand, scaleLinear } from 'd3';
 	import { axis } from '#lib/axis.js';
 
-	let { data } = $props();
+	let { data, onGenreHover = () => {} } = $props();
 	let width = $state(600);
 	const height = 310;
 	const margin = { top: 8, right: 40, bottom: 44, left: 122 };
@@ -18,7 +18,7 @@
 		<div><p class="eyebrow">03 / By genre</p><h2 id="genre-title">What tops the chart?</h2></div>
 		<span class="tag">Song counts</span>
 	</header>
-	<p class="panel-description">Number of #1 songs by primary genre, from most to least.</p>
+	<p class="panel-description">Number of #1 songs by primary genre, from most to least. Hover a bar to highlight its songs in the scatterplot; counts stay unchanged.</p>
 	<div class="chart" bind:clientWidth={width}>
 		<svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Horizontal bar chart of number-one songs by primary genre, sorted by count">
 			{#each x.ticks(4) as tick}
@@ -27,7 +27,8 @@
 			<g class="axis genre-axis" transform={`translate(${margin.left},0)`} use:axis={{ scale: y, orientation: 'left' }} />
 			<g class="axis" transform={`translate(0,${height - margin.bottom})`} use:axis={{ scale: x, ticks: width < 450 ? 3 : 5, format: (count) => String(count) }} />
 			{#each genres as group (group.genre)}
-				<rect x={x(0)} y={y(group.genre)} width={x(group.count) - x(0)} height={y.bandwidth()} rx="2" fill={group.genre === 'Unlabeled' ? 'var(--muted)' : 'var(--teal)'}>
+				<rect role="img" aria-label={`${group.genre}: ${group.count} #1 songs`} x={x(0)} y={y(group.genre)} width={x(group.count) - x(0)} height={y.bandwidth()} rx="2" fill={group.genre === 'Unlabeled' ? 'var(--muted)' : 'var(--teal)'}
+					onmouseenter={() => onGenreHover(group.genre)} onmouseleave={() => onGenreHover(null)}>
 					<title>{group.genre}: {group.count} #1 songs</title>
 				</rect>
 				<text class="bar-count" x={x(group.count) + 6} y={y(group.genre) + y.bandwidth() / 2} dominant-baseline="middle">{group.count}</text>

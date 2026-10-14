@@ -2,7 +2,7 @@
 	import { scaleLinear } from 'd3';
 	import { axis } from '#lib/axis.js';
 
-	let { data } = $props();
+	let { data, hoveredGenre = null } = $props();
 	let width = $state(600);
 	const height = 280;
 	const margin = { top: 18, right: 22, bottom: 46, left: 56 };
@@ -27,7 +27,7 @@
 			<g class="axis" transform={`translate(0,${height - margin.bottom})`} use:axis={{ scale: x, ticks: 5 }} />
 			<g class="axis" transform={`translate(${margin.left},0)`} use:axis={{ scale: y, orientation: 'left', ticks: 5 }} />
 			{#each available as song}
-				<circle class="song-mark" cx={x(song.energy)} cy={y(song.happiness)} r="3.5">
+				<circle class="song-mark" cx={x(song.energy)} cy={y(song.happiness)} r="3.5" opacity={hoveredGenre === null || song.genre === hoveredGenre ? 1 : 0.12}>
 					<title>{song.song} — {song.artist} ({song.year})&#10;Energy: {song.energy}/100 · Happiness: {song.happiness}/100</title>
 				</circle>
 			{/each}
@@ -39,7 +39,7 @@
 		{#if missing.length}
 			<svg width={missing.length * 14} height="14" role="img" aria-label={`${missing.length} songs with missing audio values`}>
 				{#each missing as song, index}
-					<circle cx={7 + index * 14} cy="7" r="3.5" fill="var(--muted)"><title>{song.song} — {song.artist}: audio values unavailable</title></circle>
+					<circle cx={7 + index * 14} cy="7" r="3.5" fill="var(--muted)" opacity={hoveredGenre === null || song.genre === hoveredGenre ? 1 : 0.12}><title>{song.song} — {song.artist}: audio values unavailable</title></circle>
 				{/each}
 			</svg>
 		{/if}
@@ -48,8 +48,8 @@
 </section>
 
 <style>
-	.song-mark { fill: var(--orange); fill-opacity: 0.42; stroke: var(--orange); stroke-width: 0.5; }
-	.song-mark:hover { fill-opacity: 1; stroke: var(--ink); stroke-width: 1.5; }
+	.song-mark { fill: var(--orange); stroke: var(--orange); stroke-width: 0.5; }
+	.song-mark:hover { stroke: var(--ink); stroke-width: 1.5; }
 	.legend-dot { width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
 	.missing-note { display: flex; align-items: center; gap: 6px; }
 	.missing-note svg { flex-shrink: 0; }

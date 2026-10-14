@@ -10,6 +10,7 @@
 	let data = $state([]);
 	let loading = $state(true);
 	let error = $state('');
+	let hoveredGenre = $state(null);
 
 	onMount(() => {
 		const controller = new AbortController();
@@ -45,8 +46,8 @@
 	{:else}
 		<div class="dashboard">
 			<Timeline {data} />
-			<Scatter {data} />
-			<GenreBars {data} />
+			<Scatter {data} {hoveredGenre} />
+			<GenreBars {data} onGenreHover={(genre) => hoveredGenre = genre} />
 			<KpiRow {data} />
 		</div>
 	{/if}
