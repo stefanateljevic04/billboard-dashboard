@@ -1,7 +1,7 @@
 <script>
 	import { format, mean } from 'd3';
 
-	let { data } = $props();
+	let { data, scopeLabel = 'Full dataset' } = $props();
 	let averageWeeks = $derived(mean(data.filter((song) => song.weeksAtNumberOne !== null), (song) => song.weeksAtNumberOne));
 	let metrics = $derived([
 		{ label: 'Total #1 songs', value: format(',')(data.length), unit: 'songs', description: 'One row per song that reached the top spot.' },
@@ -12,9 +12,9 @@
 <section class="panel kpi-panel" aria-labelledby="kpi-title">
 	<header class="panel-header">
 		<div><p class="eyebrow">04 / The big picture</p><h2 id="kpi-title">A snapshot of the top spot</h2></div>
-		<span class="tag">Full dataset</span>
+		<span class="tag">{scopeLabel}</span>
 	</header>
-	<p class="panel-description">Two ways to summarize more than six decades of chart-toppers.</p>
+	<p class="panel-description">Song count and average weeks at #1 for the selected years, or the full collection when the brush is clear.</p>
 	<div class="metrics">
 		{#each metrics as metric (metric.label)}
 			<div class="metric">

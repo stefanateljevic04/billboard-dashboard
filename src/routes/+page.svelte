@@ -11,6 +11,10 @@
 	let loading = $state(true);
 	let error = $state('');
 	let hoveredGenre = $state(null);
+	let yearRange = $state(null);
+	let filtered = $derived(yearRange === null
+		? data
+		: data.filter((song) => song.year >= yearRange[0] && song.year <= yearRange[1]));
 
 	onMount(() => {
 		const controller = new AbortController();
@@ -37,7 +41,7 @@
 			<h1>The <span>#1s.</span></h1>
 			<p class="intro">The sounds that made it to the top. Explore #1 songs from 1958 to early 2025.</p>
 		</div>
-		<div class="edition"><span class="edition-dot"></span> Full collection <span class="edition-years">1958 — 2025</span></div>
+		<div class="edition"><span class="edition-dot"></span> {yearRange === null ? 'Full collection' : 'Selected years'} <span class="edition-years">{yearRange === null ? '1958 — 2025' : `${yearRange[0]} — ${yearRange[1]}`}</span></div>
 	</header>
 	{#if loading}
 		<div class="status" role="status">Loading the chart-toppers…</div>
@@ -45,13 +49,13 @@
 		<div class="status" role="alert">{error}</div>
 	{:else}
 		<div class="dashboard">
-			<Timeline {data} />
-			<Scatter {data} {hoveredGenre} />
-			<GenreBars {data} onGenreHover={(genre) => hoveredGenre = genre} />
-			<KpiRow {data} />
+			<Timeline {data} {yearRange} onYearRangeChange={(range) => yearRange = range} />
+			<Scatter data={filtered} {hoveredGenre} />
+			<GenreBars data={filtered} onGenreHover={(genre) => hoveredGenre = genre} />
+			<KpiRow data={filtered} scopeLabel={yearRange === null ? 'Full dataset' : `${yearRange[0]}–${yearRange[1]}`} />
 		</div>
 	{/if}
-	<footer class="page-footer"><span>Source: Chris Dalla Riva · Uncharted Territory</span><span>Each row is a song that reached #1 · All views show the full dataset</span></footer>
+	<footer class="page-footer"><span>Source: Chris Dalla Riva · Uncharted Territory</span><span>Each row is a song that reached #1 · Brush filters result views; genre hover highlights songs</span></footer>
 </main>
 
 <style>
